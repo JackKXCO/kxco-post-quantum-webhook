@@ -389,11 +389,11 @@ Do not mount response-signing middleware on streaming routes (SSE, chunked trans
 
 ## Security
 
-All signing and verification delegates to [`kxco-post-quantum`](https://www.npmjs.com/package/kxco-post-quantum), which wraps [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) — audited by Cure53 (2024). HMAC-SHA256 uses the Node.js built-in `crypto` module. No outbound network calls are made; this is a pure signing and verification layer.
+All signing and verification delegates to [`kxco-post-quantum`](https://www.npmjs.com/package/kxco-post-quantum), which wraps [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum). That upstream package has **not** been independently audited by a third party; it has been self-audited by its maintainer. Cure53's 2023 NDS-01 audit of the `@noble` ecosystem covered `ciphers`, `curves` and `hashes`, and did not cover `@noble/post-quantum`. See [`kxco-post-quantum/AUDIT.md`](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/blob/main/AUDIT.md) for the full posture. HMAC-SHA256 uses the Node.js built-in `crypto` module. No outbound network calls are made; this is a pure signing and verification layer.
 
 Keep private keys in environment variables or a KMS. Never log `pqSecretKey` or `hmacSecret`. Use `required: 'both'` in production unless you have a documented reason not to.
 
-To report a vulnerability, open a [private security advisory](https://github.com/KnightsbridgeAIQ/kxco-pq-webhook/security/advisories/new) or email security@kxco.ai.
+To report a vulnerability, open a [private security advisory](https://github.com/KnightsbridgeAIQ/kxco-pq-webhook/security/advisories/new) or email **john@knightsbridgelaw.com**. Acknowledgement within 2 business days, triage decision within 5. Full policy, including safe harbour for good-faith research: <https://kxco.ai/security>.
 
 ---
 
