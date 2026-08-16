@@ -1,6 +1,6 @@
 {
   "name": "kxco-post-quantum-webhook",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "Post-quantum ML-DSA-65 webhook signing and verification. Sign outgoing payloads so recipients can prove they came from you; verify incoming webhooks before processing them. Drop-in for HMAC-SHA256 webhook patterns, but quantum-safe.",
   "keywords": [
     "post-quantum",
@@ -42,10 +42,10 @@
   "funding": "https://kxco.ai",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JackKXCO/kxco-post-quantum-webhook.git"
+    "url": "https://github.com/KnightsbridgeAIQ/kxco-pq-webhook.git"
   },
   "bugs": {
-    "url": "https://github.com/JackKXCO/kxco-post-quantum-webhook/issues"
+    "url": "https://github.com/KnightsbridgeAIQ/kxco-pq-webhook/issues"
   },
   "type": "module",
   "sideEffects": false,
@@ -100,14 +100,14 @@
     "CHANGELOG.md"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20.19"
   },
   "peerDependencies": {
-    "kxco-post-quantum": "^1.0.3"
+    "kxco-post-quantum": "^1.3.0"
   },
   "devDependencies": {
     "fastify": "^5.0.0",
-    "kxco-post-quantum": "^1.0.3"
+    "kxco-post-quantum": "^1.3.0"
   },
   "scripts": {
     "test": "node --test --test-reporter=spec test/builders.test.js test/client.test.js test/adapters.test.js test/fastify.test.js test/response-signing.test.js test/verified-fetch.test.js",
