@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.1
+
+Released to carry an npm provenance attestation. **No functional change**: no
+source file is touched and the dependency set is identical to the previous
+version.
+
+Earlier releases of this package have no attestation, and provenance attaches to
+a version rather than to a package, so it cannot be applied retroactively. The
+publish workflow now declares `id-token: write`, publishes with `--provenance`
+instead of `--no-provenance`, and authenticates through an npm Trusted Publisher
+binding. Verify with `npm view kxco-post-quantum-webhook dist.attestations`.
+
 ## 1.0.6 — 2026-05-28
 
 Documentation and package description update. No API changes.
