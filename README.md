@@ -9,6 +9,33 @@ Post-quantum ML-DSA-65 webhook signing and verification. Sign outgoing webhook p
 
 ---
 
+## Release integrity
+
+Every release of this package is checkable without asking us for anything.
+
+- **Provenance.** Each release carries a SLSA provenance attestation tying the
+  published tarball to the commit and workflow that built it. Verify with
+  `npm audit signatures`, or read it directly from
+  `registry.npmjs.org/-/npm/v1/attestations/kxco-post-quantum-webhook@<version>`.
+- **Bill of materials.** A CycloneDX SBOM is published as a GitHub Release asset
+  at `releases/download/v<version>/sbom.cyclonedx.json`, a permanent
+  unauthenticated URL. Not an expiring build artifact.
+- **No bundled cryptography.** This package declares
+  [`kxco-post-quantum`](https://www.npmjs.com/package/kxco-post-quantum) as a
+  **peer** dependency rather than a direct one, so it never pulls a second copy
+  of the primitives into your tree and never pins you to a version behind the
+  one you chose. You install the base package and control which version signs.
+  A correctness fix there therefore applies immediately, without waiting on a
+  release of this package. Every GitHub Action used to build it is pinned by
+  40-character commit SHA.
+- **Conformance underneath.** The cryptography comes from
+  [`kxco-post-quantum`](https://www.npmjs.com/package/kxco-post-quantum), which
+  is run against **2,103 NIST ACVP vectors (0 failed)** and a **225-check
+  cross-implementation interoperability matrix** against liboqs, Bouncy Castle
+  and two pure-Python implementations, in both directions and with negative
+  controls. Its published tarball also rebuilds bit-for-bit from its own tag,
+  verified in CI on every run.
+
 ## When to use this
 
 Use this package when you need proof that a webhook delivery came from a specific sender — not just that the payload was not tampered with in transit.
