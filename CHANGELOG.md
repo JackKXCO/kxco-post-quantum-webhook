@@ -1,5 +1,41 @@
 # Changelog
 
+## 1.2.0
+
+Additive. The `X-KXCO-*` header scheme is byte-for-byte unchanged, and the test
+suite asserts that no new header appears unless a caller asks for one.
+
+### An optional compact-JWS delivery path
+
+`signBodyJws()`, `verifyBodyJws()` and `JWS_HEADER`, also importable from
+`kxco-post-quantum-webhook/jws`. A second, independent proof of the same
+delivery, using the RFC 9964 `alg` name `ML-DSA-65`.
+
+This exists for receivers whose stack already speaks JWS — a gateway, an IdP, a
+partner's verifier. For them, adding a JWS header is a config change; parsing
+three bespoke headers is a project.
+
+**The payload is detached.** The claims carry `body_sha256`, not the body.
+Duplicating a webhook body into a header would double the bytes on the wire and
+give a lazy verifier two copies to disagree about. The digest binds the
+signature to one body and nothing else.
+
+`iat` is checked against a 300 second window, matching `X-KXCO-Timestamp`.
+`aud` and `pinnedKid` are checked when supplied. Verification fails closed on
+every malformed input rather than throwing, matching `verifyDelivery`.
+
+Requires `kxco-post-quantum` ^1.6.0, which is where the compact JWS lives.
+
+### Corrected
+
+The README described the package as a drop-in for HMAC "but quantum-safe".
+Replaced with what is actually true: it is signed with a NIST-standardised
+post-quantum algorithm. `.socket.yml` no longer says `@noble/post-quantum` was
+audited by Cure53 — it was not, by Cure53 or anyone else. (The other Noble
+packages were audited separately: hashes by Cure53 in Jan 2022, curves and
+ciphers by Cure53 in Sep 2024.) The README's Security section already said this
+correctly.
+
 ## 1.1.1
 
 Released to carry an npm provenance attestation. **No functional change**: no

@@ -5,7 +5,7 @@
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue)](./LICENSE)
 [![node](https://img.shields.io/node/v/kxco-post-quantum-webhook.svg)](https://nodejs.org)
 
-Post-quantum ML-DSA-65 webhook signing and verification. Sign outgoing webhook payloads so recipients can prove they came from you. Verify incoming webhooks before processing them. Drop-in replacement for HMAC-SHA256 webhook patterns, but quantum-safe.
+Post-quantum ML-DSA-65 webhook signing and verification. Sign outgoing webhook payloads so recipients can prove they came from you. Verify incoming webhooks before processing them. Drop-in replacement for HMAC-SHA256 webhook patterns, signed with a NIST-standardised post-quantum algorithm. An optional compact-JWS path is available for receivers whose stack already speaks JWS.
 
 ---
 
@@ -414,9 +414,45 @@ Do not mount response-signing middleware on streaming routes (SSE, chunked trans
 
 ---
 
+## The optional JWS path
+
+The `X-KXCO-*` header scheme above is the default and is not going anywhere. It is what every existing receiver parses and it is smaller on the wire.
+
+For a receiver whose stack already speaks JWS — a gateway, an IdP, a partner's verifier — there is a second path. For them, "add a JWS header" is a config change and "parse three bespoke headers" is a project.
+
+```js
+import { signBodyJws, verifyBodyJws, JWS_HEADER } from 'kxco-post-quantum-webhook'
+
+// sender
+headers[JWS_HEADER] = signBodyJws({
+  rawBody, secretKey, kid,
+  event: 'payment.settled',
+  deliveryId: 'dlv_123',
+  audience: 'https://acme.example/hooks',   // optional
+})
+
+// receiver
+const result = verifyBodyJws({
+  token: headers['x-kxco-jws'],
+  rawBody,
+  publicKey,
+  pinnedKid: 'aa29f37ab7f4b2cf',
+  audience: 'https://acme.example/hooks',
+})
+if (!result.valid) return reject(result.reason)
+```
+
+The token uses the RFC 9964 `alg` name `ML-DSA-65`, so a JWS library that knows the registration can identify it.
+
+**The payload is detached.** The claims carry `body_sha256`, not the body. Duplicating a webhook body into a header would double the bytes on the wire and give a lazy verifier two copies to disagree about. The digest binds the signature to exactly one body and to nothing else.
+
+`iat` is checked against a 300 second window by default, the same as `X-KXCO-Timestamp`. `aud` is checked only if you pass one.
+
+The two paths are independent proofs of the same delivery. Attach either, or both.
+
 ## Security
 
-All signing and verification delegates to [`kxco-post-quantum`](https://www.npmjs.com/package/kxco-post-quantum), which wraps [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum). That upstream package has **not** been independently audited by a third party; it has been self-audited by its maintainer. Cure53's 2023 NDS-01 audit of the `@noble` ecosystem covered `ciphers`, `curves` and `hashes`, and did not cover `@noble/post-quantum`. See [`kxco-post-quantum/AUDIT.md`](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/blob/main/AUDIT.md) for the full posture. HMAC-SHA256 uses the Node.js built-in `crypto` module. No outbound network calls are made; this is a pure signing and verification layer.
+All signing and verification delegates to [`kxco-post-quantum`](https://www.npmjs.com/package/kxco-post-quantum), which wraps [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum). That upstream package has **not** been independently audited by a third party; it has been self-audited by its maintainer. The other Noble packages have been audited, but separately and at different times: `@noble/hashes` by Cure53 in January 2022, `@noble/curves` by Trail of Bits in February 2023, Kudelski in September 2023 and Cure53 in September 2024, and `@noble/ciphers` by Cure53 in September 2024. None of those engagements covered the post-quantum package. See [`kxco-post-quantum/AUDIT.md`](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/blob/main/AUDIT.md) for the full posture. HMAC-SHA256 uses the Node.js built-in `crypto` module. No outbound network calls are made; this is a pure signing and verification layer.
 
 Keep private keys in environment variables or a KMS. Never log `pqSecretKey` or `hmacSecret`. Use `required: 'both'` in production unless you have a documented reason not to.
 

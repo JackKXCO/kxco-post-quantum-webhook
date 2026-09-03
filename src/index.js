@@ -26,6 +26,11 @@ export { signedFetch, signedEnvelope }       from './client.js'
 export { signResponse, isStreamingBody }     from './response-core.js'
 export { verifiedFetch, KxcoResponseError }  from './verified-fetch.js'
 
+// An optional second proof path: a compact JWS over the delivery, for
+// receivers whose stack already speaks JWS. The X-KXCO-* header scheme above
+// is unchanged and remains the default; nothing here replaces it.
+export { signBodyJws, verifyBodyJws, JWS_HEADER } from './jws-signature.js'
+
 // Re-export the canonical low-level webhook helpers from kxco-post-quantum
 // for callers that want the original API surface.
 export { webhook }                           from 'kxco-post-quantum'

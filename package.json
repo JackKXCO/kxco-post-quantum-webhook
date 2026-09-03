@@ -1,7 +1,7 @@
 {
   "name": "kxco-post-quantum-webhook",
-  "version": "1.1.3",
-  "description": "Post-quantum ML-DSA-65 webhook signing and verification. Sign outgoing payloads so recipients can prove they came from you; verify incoming webhooks before processing them. Drop-in for HMAC-SHA256 webhook patterns, but quantum-safe.",
+  "version": "1.2.0",
+  "description": "Post-quantum ML-DSA-65 webhook signing and verification. Sign outgoing payloads so recipients can prove they came from you; verify incoming webhooks before processing them. Drop-in for HMAC-SHA256 webhook patterns, with an optional compact-JWS path for receivers whose stack already speaks JWS.",
   "keywords": [
     "post-quantum",
     "pqc",
@@ -91,6 +91,10 @@
     "./vercel": {
       "types": "./src/vercel.d.ts",
       "import": "./src/vercel.js"
+    },
+    "./jws": {
+      "types": "./src/jws-signature.d.ts",
+      "import": "./src/jws-signature.js"
     }
   },
   "files": [
@@ -103,14 +107,14 @@
     "node": ">=20.19"
   },
   "peerDependencies": {
-    "kxco-post-quantum": "^1.3.0"
+    "kxco-post-quantum": "^1.6.0"
   },
   "devDependencies": {
     "fastify": "^5.0.0",
     "kxco-post-quantum": "^1.3.0"
   },
   "scripts": {
-    "test": "node --test --test-reporter=spec test/builders.test.js test/client.test.js test/adapters.test.js test/fastify.test.js test/response-signing.test.js test/verified-fetch.test.js",
+    "test": "node --test --test-reporter=spec test/builders.test.js test/client.test.js test/adapters.test.js test/fastify.test.js test/response-signing.test.js test/verified-fetch.test.js test/jws-signature.test.js",
     "test:cov": "node --test --experimental-test-coverage test/builders.test.js test/client.test.js test/adapters.test.js test/fastify.test.js test/response-signing.test.js test/verified-fetch.test.js",
     "lint": "node -c src/index.js && node -c src/builders.js && node -c src/client.js && node -c src/response-core.js && node -c src/verified-fetch.js && node -c src/express.js && node -c src/fastify.js && node -c src/hono.js && node -c src/workers.js && node -c src/vercel.js"
   },
