@@ -383,17 +383,14 @@ Do not mount response-signing middleware on streaming routes (SSE, chunked trans
 
 ---
 
-## What this does NOT do
+## Where this fits
 
-**Payload encryption** — signatures prove origin and integrity; they do not hide the content. For encrypted payloads, use [`kxco-pq-vault`](https://www.npmjs.com/package/kxco-pq-vault).
+Proves a delivery came from you and arrived unchanged, as a drop-in for the
+HMAC-SHA256 pattern your receivers already implement.
 
-**Identity credentials** — this package does not issue, verify, or manage identity documents. For KYC-backed identity credentials tied to ML-DSA-65 keys, use [`kxco-pq-sdk`](https://www.npmjs.com/package/kxco-pq-sdk).
-
-**JWT signing or JWKS endpoints** — JWT envelopes have different semantics (JOSE `alg` fields, header/payload separation, JWKS discovery). ML-DSA-65 signatures at ~3 KB also exceed browser cookie limits, making JWT use impractical. Not in scope.
-
-**Generic HTTP security** — CSRF, rate limiting, mTLS, and other HTTP-security concerns belong in your existing stack. This package does one thing: sign and verify webhook and API response payloads.
-
----
+- [`kxco-pq-vault`](https://www.npmjs.com/package/kxco-pq-vault) when the payload itself must be unreadable in transit
+- [`kxco-pq-sdk`](https://www.npmjs.com/package/kxco-pq-sdk) for KYC-backed identity credentials
+- CSRF, rate limiting and mTLS stay in your existing HTTP stack
 
 ## Part of the KXCO stack
 
