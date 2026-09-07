@@ -405,7 +405,7 @@ HMAC-SHA256 pattern your receivers already implement.
 
 ## Compatibility
 
-- Node.js >= 18 (uses native `crypto.subtle` via `@noble/post-quantum`)
+- Node.js >= 20.19, matching the `engines` field (uses native `crypto.subtle` via `@noble/post-quantum`, which needs a global WebCrypto that Node 18 does not expose)
 - Cloudflare Workers, Deno Deploy, Vercel Edge, Bun
 - Any modern browser via a bundler (Express and Fastify adapters are server-only)
 
